@@ -1,8 +1,15 @@
 import { DEFAULT_SETTINGS, type AnalysisResult, type Settings } from './types';
+import { imagePriority } from './image-priority';
 
 const analyzed = new WeakMap<HTMLImageElement, string>();
 const pending = new Set<HTMLImageElement>();
+const nearViewport = new WeakSet<HTMLImageElement>();
+const loadTracked = new WeakSet<HTMLImageElement>();
+const queued = new Set<HTMLImageElement>();
+const MAX_ACTIVE_ANALYSES = 2;
 let settings: Settings = DEFAULT_SETTINGS;
+let activeAnalyses = 0;
+let pumpScheduled = false;
 
 function scoreText(score: number): string {
   return `${Math.round(score * 100)}% AI`;
@@ -55,15 +62,72 @@ async function analyzeImage(image: HTMLImageElement): Promise<void> {
   }
 }
 
+function nextImage(): HTMLImageElement | undefined {
+  let selected: HTMLImageElement | undefined;
+  let selectedPriority = Number.POSITIVE_INFINITY;
+  for (const image of queued) {
+    if (!nearViewport.has(image) || !image.isConnected) {
+      queued.delete(image);
+      continue;
+    }
+    const priority = imagePriority(image.getBoundingClientRect(), innerWidth, innerHeight);
+    if (priority < selectedPriority) {
+      selected = image;
+      selectedPriority = priority;
+    }
+  }
+  if (selected) queued.delete(selected);
+  return selected;
+}
+
+function pumpQueue(): void {
+  pumpScheduled = false;
+  while (activeAnalyses < MAX_ACTIVE_ANALYSES) {
+    const image = nextImage();
+    if (!image) return;
+    activeAnalyses += 1;
+    void analyzeImage(image).finally(() => {
+      activeAnalyses -= 1;
+      schedulePump();
+    });
+  }
+}
+
+function schedulePump(): void {
+  if (pumpScheduled) return;
+  pumpScheduled = true;
+  queueMicrotask(pumpQueue);
+}
+
+function queueImage(image: HTMLImageElement): void {
+  if (!nearViewport.has(image)) return;
+  queued.add(image);
+  schedulePump();
+}
+
 const observer = new IntersectionObserver((entries) => {
   for (const entry of entries) {
-    if (entry.isIntersecting && entry.target instanceof HTMLImageElement) void analyzeImage(entry.target);
+    if (!(entry.target instanceof HTMLImageElement)) continue;
+    if (entry.isIntersecting) {
+      nearViewport.add(entry.target);
+      queueImage(entry.target);
+    } else {
+      nearViewport.delete(entry.target);
+      queued.delete(entry.target);
+    }
   }
-}, { rootMargin: '400px' });
+}, { rootMargin: '100px 0px' });
+
+function trackImage(image: HTMLImageElement): void {
+  observer.observe(image);
+  if (loadTracked.has(image)) return;
+  loadTracked.add(image);
+  image.addEventListener('load', () => queueImage(image));
+}
 
 function discover(root: ParentNode): void {
-  if (root instanceof HTMLImageElement) observer.observe(root);
-  root.querySelectorAll?.('img').forEach((image) => observer.observe(image));
+  if (root instanceof HTMLImageElement) trackImage(root);
+  root.querySelectorAll?.('img').forEach(trackImage);
 }
 
 void chrome.storage.sync.get(DEFAULT_SETTINGS).then((stored) => {
@@ -79,11 +143,12 @@ chrome.storage.onChanged.addListener((changes, area) => {
       .map((key) => [key, changes[key]?.newValue])
   ) as Partial<Settings>;
   settings = { ...settings, ...changed };
+  if (settings.enabled) document.querySelectorAll('img').forEach(queueImage);
 });
 
 new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     mutation.addedNodes.forEach((node) => { if (node instanceof Element) discover(node); });
-    if (mutation.type === 'attributes' && mutation.target instanceof HTMLImageElement) void analyzeImage(mutation.target);
+    if (mutation.type === 'attributes' && mutation.target instanceof HTMLImageElement) queueImage(mutation.target);
   }
 }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });

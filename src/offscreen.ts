@@ -79,7 +79,8 @@ async function getModelBytes(): Promise<ArrayBuffer> {
 
 async function createSession(): Promise<ort.InferenceSession> {
   ort.env.wasm.wasmPaths = chrome.runtime.getURL('wasm/');
-  ort.env.wasm.numThreads = 1;
+  ort.env.wasm.numThreads = crossOriginIsolated ? Math.min(4, Math.max(1, Math.floor(navigator.hardwareConcurrency / 2))) : 1;
+  ort.env.webgpu.powerPreference = 'high-performance';
   const bytes = await getModelBytes();
   reportProgress('initialize', 88, 'Initializing the local inference engine…');
   const providers: ort.InferenceSession.ExecutionProviderConfig[] = [];
