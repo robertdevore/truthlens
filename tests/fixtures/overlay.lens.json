@@ -1,0 +1,11 @@
+{
+  "title": { "contains": "TruthLens AI overlay fixture" },
+  "text": { "contains": ["AI · 97%", "4% AI", "Likely AI-generated", "Likely real"] },
+  "selectors": {
+    "exists": ["#ai-card .truthlens-ai-image", "#ai-card .truthlens-score[data-verdict='ai']", "#real-card .truthlens-score[data-verdict='real']"],
+    "not_exists": ["#real-card .truthlens-ai-image"]
+  },
+  "console": { "no_errors": true },
+  "network": { "no_5xx": true },
+  "layout": { "no_horizontal_overflow": true }
+}

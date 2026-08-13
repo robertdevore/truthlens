@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>TruthLens detector smoke fixture</title>
+  <style>
+    body { background: #eef2f7; font: 16px/1.5 system-ui, sans-serif; margin: 0; padding: 40px; }
+    main { margin: auto; max-width: 900px; }
+    .grid { display: grid; gap: 24px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    figure { background: white; border-radius: 16px; margin: 0; overflow: hidden; }
+    img { display: block; height: 280px; object-fit: cover; width: 100%; }
+    figcaption { padding: 12px 16px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>TruthLens end-to-end detector smoke test</h1>
+    <div class="grid">
+      <figure><img id="published-fake" alt="Publisher AI example" src="/.model-build/examples/example_fake_1.jpg"><figcaption>Publisher AI example</figcaption></figure>
+      <figure><img id="published-real" alt="Publisher real example" src="/.model-build/examples/example_real_1.jpg"><figcaption>Publisher real example</figcaption></figure>
+    </div>
+  </main>
+</body>
+</html>
