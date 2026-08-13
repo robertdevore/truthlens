@@ -1,4 +1,4 @@
-objective: "Prioritize visible Google Images thumbnails, bound preprocessing and inference work, improve safe local runtime utilization, and preserve identical model, preprocessing, calibration, privacy, and verdict quality."
+objective: "Validate contest readiness on a representative public benchmark, replace the detector only when held-out evidence clears 75% balanced accuracy, batch visible inference, and preserve browser-local privacy and reproducibility."
 checklist_file: ""
 max_iterations: 8
 max_no_progress: 2

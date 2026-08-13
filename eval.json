@@ -24,7 +24,7 @@
     {
       "name": "model checksum is pinned",
       "check": "file_contains",
-      "params": { "path": "src/model-config.ts", "expected": "40307788bb92ef5bfc6bcefa3df8442a0b47feb4467b5f6625194eabe58e1945" }
+      "params": { "path": "src/model-config.ts", "expected": "a7132ad643bc0cce19752e089beb9f85818891a67898ea06e0e09abeadd7f3f0" }
     },
     {
       "name": "privacy policy forbids transmission",

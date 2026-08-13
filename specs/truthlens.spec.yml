@@ -20,7 +20,7 @@ risks:
     severity: "high"
   - risk: "Generator distribution shift can reduce accuracy"
     severity: "high"
-  - risk: "A first-run model download is approximately 328 MB"
+  - risk: "A first-run model download is approximately 335 MB"
     severity: "medium"
 review_expectations:
   - "Review MV3 CSP and host-permission use"

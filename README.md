@@ -8,20 +8,20 @@ Likely AI images are blurred and receive a centered red `AI · confidence` badge
 
 ## Why this detector
 
-The model is a CLIP ViT-B/16 forensic classifier fine-tuned on approximately 20,000 balanced samples that include Stable Diffusion, Midjourney, DALL·E, Flux, GPT Image, and real public-domain/CC0 photographs. Its publisher reports 95.9% accuracy, 95.9% macro F1, and 0.994 ROC-AUC on a held-out test split. Those are source-model results, not a claim about the bounty's private benchmark; detector accuracy can shift substantially across datasets and future generators.
+The model is the phase-one checkpoint of an MIT-licensed ConvNeXt V2 classifier trained across roughly 400,000 real photographs and generated images from modern diffusion and GAN families. Phase one outperformed the publisher's later continual-learning checkpoint on TruthLens's web-degraded validation protocol.
 
-TruthLens maps the model's published, temperature-calibrated fake/real boundaries onto the challenge's required 65% confidence convention. The mapping is monotonic and covered by unit tests.
+TruthLens selected and calibrated it on a fixed 1,000-image balanced sample from the public AIGC Detection Benchmark after resizing and JPEG recompression to simulate web thumbnails. In the actual extension runtime, the decision boundary selected on the first 500 images achieved 79.2% balanced accuracy on the untouched second 500: 72.4% AI recall and 86.0% real recall. An independent Python/ONNX run reached 80.0%. This is evidence of crossing the bounty's public target on held-out data, not a guarantee about its private benchmark; overlap and distribution shift remain possible.
 
 ## Performance
 
 - The model session is prepared once, warmed up during setup, and restored proactively at Chrome startup.
 - Visible thumbnails are prioritized by viewport coverage. Images outside a narrow prefetch margin wait until the user approaches them, and delayed/lazy-loaded images are queued as soon as they become usable.
-- Up to two image fetch/preprocessing jobs are pipelined, while GPU inference remains serialized to avoid contention and memory spikes on image-heavy pages.
+- Up to four image fetch/preprocessing jobs are pipelined into dynamic local batches. GPU runs remain serialized to avoid contention and memory spikes.
 - Duplicate requests are coalesced. Successful results use a bounded 10-minute in-memory LRU cache, so repeated image URLs are labeled without another model run.
 - Tensor and GPU output resources are released immediately after each inference.
 - Initial setup reports live downloaded/total megabytes and advances through integrity verification, offline caching, detector initialization, and local warm-up. Success and failure states remain visible with a retry action.
 
-On the included smoke samples, a warm WebGPU inference completes in roughly one second on an Apple Silicon development machine; a repeated cached image returns from the extension in effectively zero inference time. Hardware and Chrome GPU support determine actual latency.
+In a clean-profile, extension-enabled Chromium smoke test using the published model artifact, four visible images received correct threshold decisions in 955 ms on the development machine after setup warm-up. A repeated cached image returns in effectively zero inference time. Hardware, batch composition, Chrome GPU support, and competing system load determine actual latency.
 
 ## Privacy and offline behavior
 
@@ -62,7 +62,7 @@ Load `dist/` through `chrome://extensions` for development.
 
 ## Reproduce the model artifact
 
-The runtime artifact is derived from the MIT-licensed [`wkaandemir/ai-image-detector`](https://huggingface.co/wkaandemir/ai-image-detector) revision `fefa013737a0c3477961d36ee8dbbdc751352366`. The conversion script pins every Python dependency and downloads the original safetensors and config from that immutable revision.
+The runtime artifact is derived from the MIT-licensed [`xRayon/convnext-ai-images-detector`](https://huggingface.co/xRayon/convnext-ai-images-detector) revision `1b4d270be0590cde4320fa7503d68b44bb7ee77e`. The conversion script pins every Python dependency, downloads the immutable phase-one checkpoint, and exports a dynamic-batch ONNX graph.
 
 ```bash
 npm run model:convert
@@ -72,7 +72,7 @@ shasum -a 256 .model-build/detector.onnx
 Expected digest:
 
 ```text
-40307788bb92ef5bfc6bcefa3df8442a0b47feb4467b5f6625194eabe58e1945
+a7132ad643bc0cce19752e089beb9f85818891a67898ea06e0e09abeadd7f3f0
 ```
 
 The expected digest is compiled into the extension. A mismatch prevents the model from being cached or executed.
@@ -81,8 +81,8 @@ The expected digest is compiled into the extension. A mismatch prevents the mode
 
 1. The content script discovers visible and newly inserted `<img>` elements with `IntersectionObserver` and `MutationObserver`.
 2. The MV3 service worker owns message routing and creates one offscreen inference document.
-3. The offscreen document fetches image bytes using extension host permission, resizes to 256 × 256 RGB, applies the model's published CLIP normalization, and produces a one-logit result.
-4. A monotonic calibration maps the source model's decision interval (`p(real)` 0.91–0.93) to an AI-confidence interval of 65%–35%.
+3. The offscreen document fetches image bytes using extension host permission, performs resize/center-crop preprocessing and ImageNet normalization, and batches up to four inputs for a two-logit result.
+4. A monotonic calibration maps the public-benchmark decision boundary to the challenge's required 65% AI-confidence threshold.
 5. The content script overlays the confidence score without modifying the image bytes.
 
 Model download and image fetch are separate: only the model download goes to this project's release URL. Webpage images are read directly from the URL the page already displays.
@@ -93,9 +93,10 @@ Model download and image fetch are separate: only the model download goes to thi
 npm test                 # score/preprocessing unit tests
 npm run check            # complete deterministic quality gate
 npm run package          # reproducible extension archive
+.model-build/venv/bin/python scripts/benchmark_detector.py --model .model-build/detector.onnx --degraded
 ```
 
-A Kujo Spec contract is stored in `specs/truthlens.spec.yml`; deterministic release checks are stored in `eval.json`. The publisher's 95.9% held-out result establishes the model-selection target, but only the bounty maintainer can measure performance on its private benchmark.
+A Kujo Spec contract is stored in `specs/truthlens.spec.yml`; deterministic release checks are stored in `eval.json`. The benchmark script uses fixed public rows and reports its calibration half separately from its untouched held-out half. Only the bounty maintainer can measure performance on its private benchmark.
 
 ## Limitations
 
@@ -103,4 +104,4 @@ AI-image detection is probabilistic, generator-dependent, and vulnerable to dist
 
 ## License and attribution
 
-Extension source is MIT licensed. ONNX Runtime Web is MIT licensed. The detector weights are MIT licensed by their publisher; the backbone is based on OpenAI CLIP. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for precise provenance.
+Extension source is MIT licensed. ONNX Runtime Web and the detector weights are MIT licensed. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for precise provenance.

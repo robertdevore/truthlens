@@ -4,7 +4,7 @@ Date: 2026-08-13
 
 ## Result
 
-TruthLens v1.4.0 prioritizes visible thumbnails, bounds content-script work to two active analysis requests, and waits to enqueue below-fold images until they enter a 100 px viewport margin. Persistent load handling covers delayed and lazy-loaded image URLs.
+TruthLens v1.4.0 introduced visible-first scheduling with two active analysis requests. TruthLens v2.0.0 raises that bound to four so the dynamic-batch detector can process a visible group together. Images still wait outside the 100 px viewport margin, and persistent load handling covers delayed and lazy-loaded image URLs.
 
 An extension-enabled Chromium smoke test used the real pinned ONNX model against two delayed-load publisher examples above the fold and the same pair below the fold:
 
