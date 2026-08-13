@@ -2,23 +2,24 @@
 ## gate: quality
 $ npm run check
 
-> truthlens@1.1.0 check
+> truthlens@1.4.0 check
 > tsc --noEmit && eslint . && vitest run && npm run build && node scripts/verify-dist.mjs
 
 
  RUN  v3.2.7 /Users/robertdevore/2026/Kujolang/kujo-repos/truthlens
 
- ✓ tests/calibration.test.ts (3 tests) 6ms
- ✓ tests/preprocess.test.ts (2 tests) 6ms
- ✓ tests/runtime.test.ts (2 tests) 6ms
+ ✓ tests/calibration.test.ts (3 tests) 5ms
+ ✓ tests/image-priority.test.ts (2 tests) 7ms
+ ✓ tests/preprocess.test.ts (2 tests) 8ms
+ ✓ tests/runtime.test.ts (2 tests) 11ms
 
- Test Files  3 passed (3)
-      Tests  7 passed (7)
-   Start at  11:43:12
-   Duration  1.12s (transform 210ms, setup 0ms, collect 251ms, tests 18ms, environment 1ms, prepare 1.01s)
+ Test Files  4 passed (4)
+      Tests  9 passed (9)
+   Start at  12:22:35
+   Duration  1.26s (transform 238ms, setup 0ms, collect 326ms, tests 31ms, environment 1ms, prepare 1.55s)
 
 
-> truthlens@1.1.0 build
+> truthlens@1.4.0 build
 > node scripts/build.mjs
 
 Verified Manifest V3 distribution (18 required files).
@@ -36,9 +37,10 @@ $ /Users/robertdevore/2026/Kujolang/kujo-repos/kujo/target/release/kujo run /Use
 [PASS] MIT license exists
 [PASS] model checksum is pinned
 [PASS] privacy policy forbids transmission
-{"data":{"active_policy_stage":"","cache_metric_bytes_reused":0,"cache_metric_candidates":4,"cache_metric_hits":0,"cache_metric_misses":4,"cache_metric_unique_files":0,"duration_ms":6741,"failed":0,"parallel_fallback_reason":"","parallel_mode":"serial","parallel_prefetch_duration_ms":0,"parallel_prefetched_files":0,"parallel_requested":false,"parallel_used":false,"parallel_workers":1,"passed":5,"skipped":0,"suite_description":"","suite_name":"truthlens-release-gate","suite_version":"0.0.0","test_results":[{"check":"command_succeeds","description":"","details":{"allowed_command_patterns":[],"allowed_commands":[],"blocked_arg_patterns":[],"command":"npm run check","command_pattern_match_mode":"substring","exit_code":0,"stderr":"","stdout":"\n> truthlens@1.1.0 check\n> tsc --noEmit && eslint . && vitest run && npm run build && node scripts/verify-dist.mjs\n\n\n RUN  v3.2.7 /Users/robertdevore/2026/Kujolang/kujo-repos/truthlens\n\n ✓ tests/preprocess.test.ts (2 tests) 5ms\n ✓ tests/calibration.test.ts (3 tests) 7ms\n ✓ tests/runtime.test.ts (2 tests) 5ms\n\n Test Files  3 passed (3)\n      Tests  7 passed (7)\n   Start at  11:43:20\n   Duration  1.14s (transform 130ms, setup 0ms, collect 172ms, tests 17ms, environment 1ms, prepare 1.10s)\n\n\n> truthlens@1.1.0 build\n> node scripts/build.mjs\n\nVerified Manifest V3 distribution (18 required files).\n"},"message":"Command succeeded (exit 0)","name":"complete project check passes","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":1011,"expected":"\"manifest_version\": 3","found":true,"path":"dist/manifest.json"},"message":"File contains expected text","name":"manifest v3 output exists","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":1070,"expected":"MIT License","found":true,"path":"LICENSE"},"message":"File contains expected text","name":"MIT license exists","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":373,"expected":"40307788bb92ef5bfc6bcefa3df8442a0b47feb4467b5f6625194eabe58e1945","found":true,"path":"src/model-config.ts"},"message":"File contains expected text","name":"model checksum is pinned","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":956,"expected":"does not collect, transmit","found":true,"path":"PRIVACY.md"},"message":"File contains expected text","name":"privacy policy forbids transmission","passed":true,"skipped":false}],"timestamp":"","total":5},"error":"","ok":true}
+{"data":{"active_policy_stage":"","cache_metric_bytes_reused":0,"cache_metric_candidates":4,"cache_metric_hits":0,"cache_metric_misses":4,"cache_metric_unique_files":0,"duration_ms":7440,"failed":0,"parallel_fallback_reason":"","parallel_mode":"serial","parallel_prefetch_duration_ms":0,"parallel_prefetched_files":0,"parallel_requested":false,"parallel_used":false,"parallel_workers":1,"passed":5,"skipped":0,"suite_description":"","suite_name":"truthlens-release-gate","suite_version":"0.0.0","test_results":[{"check":"command_succeeds","description":"","details":{"allowed_command_patterns":[],"allowed_commands":[],"blocked_arg_patterns":[],"command":"npm run check","command_pattern_match_mode":"substring","exit_code":0,"stderr":"","stdout":"\n> truthlens@1.4.0 check\n> tsc --noEmit && eslint . && vitest run && npm run build && node scripts/verify-dist.mjs\n\n\n RUN  v3.2.7 /Users/robertdevore/2026/Kujolang/kujo-repos/truthlens\n\n ✓ tests/runtime.test.ts (2 tests) 6ms\n ✓ tests/preprocess.test.ts (2 tests) 6ms\n ✓ tests/calibration.test.ts (3 tests) 6ms\n ✓ tests/image-priority.test.ts (2 tests) 4ms\n\n Test Files  4 passed (4)\n      Tests  9 passed (9)\n   Start at  12:22:43\n   Duration  1.22s (transform 221ms, setup 0ms, collect 311ms, tests 22ms, environment 1ms, prepare 1.44s)\n\n\n> truthlens@1.4.0 build\n> node scripts/build.mjs\n\nVerified Manifest V3 distribution (18 required files).\n"},"message":"Command succeeded (exit 0)","name":"complete project check passes","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":1011,"expected":"\"manifest_version\": 3","found":true,"path":"dist/manifest.json"},"message":"File contains expected text","name":"manifest v3 output exists","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":1070,"expected":"MIT License","found":true,"path":"LICENSE"},"message":"File contains expected text","name":"MIT license exists","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":373,"expected":"40307788bb92ef5bfc6bcefa3df8442a0b47feb4467b5f6625194eabe58e1945","found":true,"path":"src/model-config.ts"},"message":"File contains expected text","name":"model checksum is pinned","passed":true,"skipped":false},{"check":"file_contains","description":"","details":{"content_length":956,"expected":"does not collect, transmit","found":true,"path":"PRIVACY.md"},"message":"File contains expected text","name":"privacy policy forbids transmission","passed":true,"skipped":false}],"timestamp":"","total":5},"error":"","ok":true}
 gate kujo_eval: pass
 
 ## gate: diff_check
 $ git diff --check
-gate diff_check: pass
+.loop-engineering/iterations/001/diff.patch:7: trailing whitespace.
++ 

@@ -1,0 +1,22 @@
+
+> truthlens@1.4.0 check
+> tsc --noEmit && eslint . && vitest run && npm run build && node scripts/verify-dist.mjs
+
+
+ RUN  v3.2.7 /Users/robertdevore/2026/Kujolang/kujo-repos/truthlens
+
+ ✓ tests/preprocess.test.ts (2 tests) 7ms
+ ✓ tests/runtime.test.ts (2 tests) 4ms
+ ✓ tests/image-priority.test.ts (2 tests) 4ms
+ ✓ tests/calibration.test.ts (3 tests) 6ms
+
+ Test Files  4 passed (4)
+      Tests  9 passed (9)
+   Start at  12:23:08
+   Duration  1.25s (transform 229ms, setup 0ms, collect 318ms, tests 22ms, environment 2ms, prepare 1.56s)
+
+
+> truthlens@1.4.0 build
+> node scripts/build.mjs
+
+Verified Manifest V3 distribution (18 required files).

@@ -1,0 +1,13 @@
+diff --git a/.loop-engineering/iterations/001/context.md b/.loop-engineering/iterations/001/context.md
+index 6e90b20..d88d16a 100644
+--- a/.loop-engineering/iterations/001/context.md
++++ b/.loop-engineering/iterations/001/context.md
+@@ -1,6 +1,6 @@
+ # Context
+ 
+-- objective: Refactor TruthLens for DRY maintainability, substantially reduce first-run and warm inference latency, and preserve the detector's published 95% held-out accuracy target with reproducible evidence.
+-- git_head: 606a3b9
++- objective: Prioritize visible Google Images thumbnails, bound preprocessing and inference work, improve safe local runtime utilization, and preserve identical model, preprocessing, calibration, privacy, and verdict quality.
++- git_head: fc058c2
+ - changed_files:
+   - none

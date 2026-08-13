@@ -1,6 +1,6 @@
 # Context
 
-- objective: Refactor TruthLens for DRY maintainability, substantially reduce first-run and warm inference latency, and preserve the detector's published 95% held-out accuracy target with reproducible evidence.
-- git_head: 606a3b9
+- objective: Prioritize visible Google Images thumbnails, bound preprocessing and inference work, improve safe local runtime utilization, and preserve identical model, preprocessing, calibration, privacy, and verdict quality.
+- git_head: fc058c2
 - changed_files:
   - none
