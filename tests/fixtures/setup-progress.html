@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>TruthLens model setup states</title>
+  <link rel="stylesheet" href="../../src/ui.css">
+  <style>body{min-width:0} main{max-width:1100px}.state-grid{display:grid;gap:18px;grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:760px){.state-grid{grid-template-columns:1fr}}</style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Visual verification</div>
+    <h1>Model setup states</h1>
+    <div class="state-grid">
+      <section class="card"><h2>In progress</h2><p class="muted" data-state="active">Model setup in progress</p><div class="setup-progress" data-state="download"><div class="progress-heading"><span>Local model setup</span><output>42%</output></div><progress max="100" value="42" aria-label="Model setup progress"></progress><p class="progress-detail">Downloading the detector model… 172 of 328 MB</p><ol class="setup-steps"><li data-state="active">Download model</li><li data-state="pending">Verify integrity</li><li data-state="pending">Save for offline use</li><li data-state="pending">Initialize detector</li><li data-state="pending">Warm up local inference</li></ol></div></section>
+      <section class="card"><h2>Success</h2><p id="success-status" data-state="success">Ready offline with WebGPU</p><div class="setup-progress" data-state="ready"><div class="progress-heading"><span>Local model setup</span><output>100%</output></div><progress max="100" value="100" aria-label="Model setup progress"></progress><p class="progress-detail">Ready offline with WebGPU</p><ol class="setup-steps"><li data-state="complete">Download model</li><li data-state="complete">Verify integrity</li><li data-state="complete">Save for offline use</li><li data-state="complete">Initialize detector</li><li data-state="complete">Warm up local inference</li></ol></div></section>
+      <section class="card"><h2>Failure</h2><p id="error-status" data-state="error">Setup failed: Model checksum verification failed</p><div class="setup-progress" data-state="error"><div class="progress-heading"><span>Local model setup</span><output>78%</output></div><progress max="100" value="78" aria-label="Model setup progress"></progress><p class="progress-detail">Model checksum verification failed</p><ol class="setup-steps"><li data-state="complete">Download model</li><li data-state="error">Verify integrity</li><li data-state="pending">Save for offline use</li><li data-state="pending">Initialize detector</li><li data-state="pending">Warm up local inference</li></ol></div></section>
+    </div>
+  </main>
+</body>
+</html>

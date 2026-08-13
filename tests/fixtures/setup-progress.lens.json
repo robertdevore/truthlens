@@ -1,0 +1,11 @@
+{
+  "title": { "contains": "TruthLens model setup states" },
+  "text": { "contains": ["42%", "172 of 328 MB", "Ready offline with WebGPU", "Setup failed: Model checksum verification failed"] },
+  "selectors": {
+    "exists": ["progress[value='42']", "progress[value='100']", ".setup-progress[data-state='error']", ".setup-steps li[data-state='complete']", ".setup-steps li[data-state='error']"],
+    "not_exists": ["[aria-busy='true'][hidden]"]
+  },
+  "console": { "no_errors": true },
+  "network": { "no_5xx": true },
+  "layout": { "no_horizontal_overflow": true }
+}
