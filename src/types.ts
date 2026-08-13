@@ -7,6 +7,7 @@ export interface AnalysisResult {
   realProbability: number;
   inferenceMs: number;
   backend: string;
+  cacheHit?: boolean;
   error?: string;
 }
 
@@ -21,4 +22,3 @@ export const DEFAULT_SETTINGS: Settings = {
   minimumPixels: 128,
   showRealScores: true
 };
-

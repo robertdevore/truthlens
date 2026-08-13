@@ -66,9 +66,12 @@ void chrome.storage.sync.get(DEFAULT_SETTINGS).then((stored) => {
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== 'sync') return;
-  for (const key of Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[]) {
-    if (changes[key]) (settings as any)[key] = changes[key]!.newValue;
-  }
+  const changed = Object.fromEntries(
+    (Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[])
+      .filter((key) => changes[key])
+      .map((key) => [key, changes[key]?.newValue])
+  ) as Partial<Settings>;
+  settings = { ...settings, ...changed };
 });
 
 new MutationObserver((mutations) => {
@@ -77,4 +80,3 @@ new MutationObserver((mutations) => {
     if (mutation.type === 'attributes' && mutation.target instanceof HTMLImageElement) void analyzeImage(mutation.target);
   }
 }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'srcset'] });
-
