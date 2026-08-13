@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.eval-results/
+.model-build/
+artifacts/
+*.zip
+.DS_Store
+

@@ -1,0 +1,22 @@
+.truthlens-score {
+  align-items: center !important;
+  backdrop-filter: blur(8px) !important;
+  background: rgba(17, 24, 39, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
+  color: #fff !important;
+  display: inline-flex !important;
+  font: 700 11px/1 system-ui, sans-serif !important;
+  letter-spacing: 0.01em !important;
+  padding: 6px 8px !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  right: 6px !important;
+  top: 6px !important;
+  z-index: 2147483646 !important;
+}
+.truthlens-score[data-verdict="ai"] { background: rgba(185, 28, 28, 0.94) !important; }
+.truthlens-score[data-verdict="uncertain"] { background: rgba(180, 83, 9, 0.94) !important; }
+.truthlens-score[data-verdict="real"] { background: rgba(21, 128, 61, 0.9) !important; }
+

@@ -1,0 +1,30 @@
+{
+  "name": "truthlens",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A privacy-first Chrome extension that detects AI-generated images entirely in the browser.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "tsc --noEmit && eslint . && vitest run && npm run build && node scripts/verify-dist.mjs",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "package": "npm run check && cd dist && zip -qr ../truthlens-extension.zip .",
+    "model:convert": "bash scripts/convert-model.sh"
+  },
+  "dependencies": {
+    "onnxruntime-web": "1.27.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.33.0",
+    "@types/chrome": "0.1.1",
+    "esbuild": "0.25.9",
+    "eslint": "9.33.0",
+    "globals": "16.3.0",
+    "typescript": "5.9.2",
+    "typescript-eslint": "8.39.1",
+    "vitest": "3.2.4"
+  }
+}
+
