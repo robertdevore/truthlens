@@ -1,0 +1,46 @@
+objective: "Refactor TruthLens for DRY maintainability, substantially reduce first-run and warm inference latency, and preserve the detector's published 95% held-out accuracy target with reproducible evidence."
+checklist_file: ""
+max_iterations: 8
+max_no_progress: 2
+max_consecutive_failures: 3
+
+allowed_actions:
+  - read_files
+  - edit_files
+  - run_tests
+  - commit_local_changes
+  - push_commits
+
+blocked_actions:
+  - deploy
+  - destructive_cleanup
+  - production_config_change
+
+eval_gates:
+  - id: quality
+    command: "npm run check"
+    required: true
+
+  - id: dependency_audit
+    command: "npm audit"
+    required: true
+
+  - id: kujo_eval
+    command: "/Users/robertdevore/2026/Kujolang/kujo-repos/kujo/target/release/kujo run /Users/robertdevore/2026/Kujolang/kujo-repos/eval/main.kujo run eval.json --output-dir .eval-results --json"
+    required: true
+
+  - id: diff_check
+    command: "git diff --check"
+    required: true
+
+commit:
+  enabled: true
+  strategy: small_meaningful
+  push: true
+
+memory:
+  enabled: true
+  provider: strata
+  project: "Agent Notes"
+  mode: consolidate
+  retrieval_tests: true
