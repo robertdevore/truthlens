@@ -18,6 +18,7 @@ TruthLens maps the model's published, temperature-calibrated fake/real boundarie
 - Image decoding happens while the model loads, while GPU inference is serialized to avoid WebGPU contention and memory spikes on image-heavy pages.
 - Duplicate requests are coalesced. Successful results use a bounded 10-minute in-memory LRU cache, so repeated image URLs are labeled without another model run.
 - Tensor and GPU output resources are released immediately after each inference.
+- Initial setup reports live downloaded/total megabytes and advances through integrity verification, offline caching, detector initialization, and local warm-up. Success and failure states remain visible with a retry action.
 
 On the included smoke samples, a warm WebGPU inference completes in roughly one second on an Apple Silicon development machine; a repeated cached image returns from the extension in effectively zero inference time. Hardware and Chrome GPU support determine actual latency.
 

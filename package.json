@@ -1,6 +1,6 @@
 {
   "name": "truthlens",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "description": "A privacy-first Chrome extension that detects AI-generated images entirely in the browser.",
   "license": "MIT",

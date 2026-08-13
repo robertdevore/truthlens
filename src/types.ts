@@ -1,4 +1,15 @@
 export type Verdict = 'ai' | 'real' | 'uncertain' | 'error';
+export type ModelStage = 'download' | 'verify' | 'cache' | 'initialize' | 'warmup' | 'ready' | 'error';
+
+export interface ModelProgress {
+  target: 'ui';
+  type: 'model-progress';
+  stage: ModelStage;
+  percent: number;
+  detail: string;
+  loadedBytes?: number;
+  totalBytes?: number;
+}
 
 export interface AnalysisResult {
   requestId: string;

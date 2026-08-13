@@ -7,7 +7,23 @@ h1 { font-size: 24px; margin: 0 0 4px; }
 .card { background: #111827; border: 1px solid #263248; border-radius: 14px; margin-top: 18px; padding: 16px; }
 button { background: #10b981; border: 0; border-radius: 9px; color: #04110d; cursor: pointer; font: inherit; font-weight: 800; padding: 10px 14px; width: 100%; }
 button:disabled { cursor: wait; opacity: .55; }
+.setup-progress { background: #090d18; border: 1px solid #263248; border-radius: 10px; margin-top: 14px; padding: 14px; }
+.progress-heading { align-items: center; display: flex; font-size: 12px; font-weight: 800; justify-content: space-between; margin-bottom: 8px; }
+progress { accent-color: #10b981; display: block; height: 10px; width: 100%; }
+.setup-progress[data-state="error"] progress { accent-color: #ef4444; }
+.progress-detail { color: #cbd5e1; font-size: 12px; margin: 8px 0 12px; min-height: 18px; }
+.setup-steps { display: grid; gap: 7px; list-style: none; margin: 0; padding: 0; }
+.setup-steps li { align-items: center; color: #94a3b8; display: flex; font-size: 12px; gap: 8px; }
+.setup-steps li::before { border: 2px solid #475569; border-radius: 50%; box-sizing: border-box; content: ''; height: 12px; width: 12px; }
+.setup-steps li[data-state="active"] { color: #f8fafc; font-weight: 700; }
+.setup-steps li[data-state="active"]::before { border-color: #10b981; box-shadow: 0 0 0 3px #10b98133; }
+.setup-steps li[data-state="complete"] { color: #6ee7b7; }
+.setup-steps li[data-state="complete"]::before { background: #10b981; border-color: #10b981; }
+.setup-steps li[data-state="error"] { color: #fca5a5; }
+.setup-steps li[data-state="error"]::before { background: #ef4444; border-color: #ef4444; }
+#status[data-state="success"] { color: #6ee7b7; font-weight: 700; }
+#status[data-state="error"] { color: #fca5a5; font-weight: 700; }
+#status[data-state="active"] { color: #f8fafc; }
 label { align-items: center; display: flex; gap: 10px; justify-content: space-between; margin: 12px 0; }
 input[type="number"] { background: #090d18; border: 1px solid #344158; border-radius: 6px; color: inherit; padding: 5px; width: 72px; }
 .privacy { border-top: 1px solid #263248; color: #98a3b8; font-size: 12px; margin-top: 16px; padding-top: 12px; }
-
