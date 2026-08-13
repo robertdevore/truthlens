@@ -15,7 +15,8 @@ TruthLens maps the model's published, temperature-calibrated fake/real boundarie
 ## Performance
 
 - The model session is prepared once, warmed up during setup, and restored proactively at Chrome startup.
-- Image decoding happens while the model loads, while GPU inference is serialized to avoid WebGPU contention and memory spikes on image-heavy pages.
+- Visible thumbnails are prioritized by viewport coverage. Images outside a narrow prefetch margin wait until the user approaches them, and delayed/lazy-loaded images are queued as soon as they become usable.
+- Up to two image fetch/preprocessing jobs are pipelined, while GPU inference remains serialized to avoid contention and memory spikes on image-heavy pages.
 - Duplicate requests are coalesced. Successful results use a bounded 10-minute in-memory LRU cache, so repeated image URLs are labeled without another model run.
 - Tensor and GPU output resources are released immediately after each inference.
 - Initial setup reports live downloaded/total megabytes and advances through integrity verification, offline caching, detector initialization, and local warm-up. Success and failure states remain visible with a retry action.

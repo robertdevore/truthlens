@@ -1,4 +1,4 @@
-objective: "Refactor TruthLens for DRY maintainability, substantially reduce first-run and warm inference latency, and preserve the detector's published 95% held-out accuracy target with reproducible evidence."
+objective: "Prioritize visible Google Images thumbnails, bound preprocessing and inference work, improve safe local runtime utilization, and preserve identical model, preprocessing, calibration, privacy, and verdict quality."
 checklist_file: ""
 max_iterations: 8
 max_no_progress: 2
