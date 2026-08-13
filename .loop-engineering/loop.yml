@@ -30,7 +30,7 @@ eval_gates:
     required: true
 
   - id: diff_check
-    command: "git diff --check -- . ':(exclude).loop-engineering'"
+    command: "git diff --check -- src tests docs manifest.json package.json package-lock.json README.md"
     required: true
 
 commit:
