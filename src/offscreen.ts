@@ -23,7 +23,6 @@ async function getModelBytes(): Promise<ArrayBuffer> {
   const checksum = await sha256(bytes);
   if (checksum !== MODEL_SHA256) throw new Error('Model checksum verification failed');
   await cache.put(MODEL_CACHE_KEY, new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } }));
-  await chrome.storage.local.set({ modelReady: true, modelBytes: bytes.byteLength });
   return bytes;
 }
 
@@ -113,4 +112,3 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
   return false;
 });
-

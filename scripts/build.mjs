@@ -20,10 +20,19 @@ for (const file of ['manifest.json', 'popup.html', 'setup.html', 'offscreen.html
 await cp(resolve(root, 'src/content.css'), resolve(dist, 'content.css'));
 await cp(resolve(root, 'src/ui.css'), resolve(dist, 'ui.css'));
 await mkdir(resolve(dist, 'wasm'), { recursive: true });
-for (const file of ['ort-wasm-simd-threaded.wasm', 'ort-wasm-simd-threaded.jsep.wasm']) {
+const wasmArtifacts = [
+  'ort-wasm-simd-threaded.asyncify.mjs',
+  'ort-wasm-simd-threaded.asyncify.wasm',
+  'ort-wasm-simd-threaded.jsep.mjs',
+  'ort-wasm-simd-threaded.jsep.wasm',
+  'ort-wasm-simd-threaded.jspi.mjs',
+  'ort-wasm-simd-threaded.jspi.wasm',
+  'ort-wasm-simd-threaded.mjs',
+  'ort-wasm-simd-threaded.wasm'
+];
+for (const file of wasmArtifacts) {
   await cp(resolve(root, 'node_modules/onnxruntime-web/dist', file), resolve(dist, 'wasm', file));
 }
 const manifest = JSON.parse(await readFile(resolve(dist, 'manifest.json'), 'utf8'));
 manifest.version = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8')).version;
 await writeFile(resolve(dist, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
-

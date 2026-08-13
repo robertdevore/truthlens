@@ -1,3 +1,5 @@
+import { MODEL_BYTES } from './model-config';
+
 let creatingOffscreen: Promise<void> | undefined;
 
 async function ensureOffscreen(): Promise<void> {
@@ -20,7 +22,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.target !== 'background') return false;
   void ensureOffscreen()
     .then(() => chrome.runtime.sendMessage({ ...message, target: 'offscreen' }))
-    .then(sendResponse)
+    .then(async (response) => {
+      if (response?.verdict !== 'error' && response?.ok !== false) {
+        await chrome.storage.local.set({ modelReady: true, modelBytes: MODEL_BYTES });
+      }
+      sendResponse(response);
+    })
     .catch((error) => sendResponse({
       requestId: message.requestId,
       verdict: 'error',
@@ -28,4 +35,3 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }));
   return true;
 });
-
