@@ -10,11 +10,17 @@ function scoreText(score: number): string {
 
 function setBadge(image: HTMLImageElement, result: AnalysisResult): void {
   const parent = image.parentElement;
-  if (!parent || result.verdict === 'error') return;
-  if (result.verdict === 'real' && !settings.showRealScores) return;
+  if (!parent) return;
+
+  const isAi = result.verdict === 'ai';
+  image.classList.toggle('truthlens-ai-image', isAi);
+  let badge = parent.querySelector<HTMLElement>(':scope > .truthlens-score');
+  if (result.verdict === 'error' || (result.verdict === 'real' && !settings.showRealScores)) {
+    badge?.remove();
+    return;
+  }
 
   if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
-  let badge = parent.querySelector<HTMLElement>(':scope > .truthlens-score');
   if (!badge) {
     badge = document.createElement('span');
     badge.className = 'truthlens-score';
@@ -22,7 +28,8 @@ function setBadge(image: HTMLImageElement, result: AnalysisResult): void {
     parent.append(badge);
   }
   badge.dataset.verdict = result.verdict;
-  badge.textContent = scoreText(result.aiConfidence);
+  badge.textContent = isAi ? `AI · ${Math.round(result.aiConfidence * 100)}%` : scoreText(result.aiConfidence);
+  badge.setAttribute('aria-label', `TruthLens ${result.verdict}: ${Math.round(result.aiConfidence * 100)} percent AI confidence`);
   badge.title = `TruthLens: ${Math.round(result.aiConfidence * 100)}% probability of AI generation · ${Math.round(result.inferenceMs)} ms · ${result.backend}`;
   image.dataset.truthlensScore = String(result.aiConfidence);
   image.dataset.truthlensVerdict = result.verdict;

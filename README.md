@@ -4,6 +4,8 @@ TruthLens is an open-source Manifest V3 Chrome extension that automatically esti
 
 Every analyzed image receives an **AI confidence score**. Scores at or above **65%** are marked AI, scores at or below 35% are marked real, and the middle band is explicitly uncertain.
 
+Likely AI images are blurred and receive a centered red `AI · confidence` badge. Real and uncertain images remain unobscured, with compact corner scores.
+
 ## Why this detector
 
 The model is a CLIP ViT-B/16 forensic classifier fine-tuned on approximately 20,000 balanced samples that include Stable Diffusion, Midjourney, DALL·E, Flux, GPT Image, and real public-domain/CC0 photographs. Its publisher reports 95.9% accuracy, 95.9% macro F1, and 0.994 ROC-AUC on a held-out test split. Those are source-model results, not a claim about the bounty's private benchmark; detector accuracy can shift substantially across datasets and future generators.
