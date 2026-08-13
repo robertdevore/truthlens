@@ -1,0 +1,35 @@
+{
+  "name": "truthlens-release-gate",
+  "description": "Deterministic source and MV3 build checks for TruthLens.",
+  "version": "1.0.0",
+  "output_dir": ".eval-results",
+  "stop_on_failure": false,
+  "tests": [
+    {
+      "name": "complete project check passes",
+      "check": "command_succeeds",
+      "params": { "command": "npm run check" },
+      "timeout_seconds": 120
+    },
+    {
+      "name": "manifest v3 output exists",
+      "check": "file_contains",
+      "params": { "path": "dist/manifest.json", "expected": "\"manifest_version\": 3" }
+    },
+    {
+      "name": "MIT license exists",
+      "check": "file_contains",
+      "params": { "path": "LICENSE", "expected": "MIT License" }
+    },
+    {
+      "name": "model checksum is pinned",
+      "check": "file_contains",
+      "params": { "path": "src/model-config.ts", "expected": "40307788bb92ef5bfc6bcefa3df8442a0b47feb4467b5f6625194eabe58e1945" }
+    },
+    {
+      "name": "privacy policy forbids transmission",
+      "check": "file_contains",
+      "params": { "path": "PRIVACY.md", "expected": "does not collect, transmit" }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+name: "TruthLens local AI image detector"
+goal: "Ship a reproducible Manifest V3 Chrome extension that automatically gives webpage images a local AI-generation confidence score and remains fully functional offline after one model download."
+version: "1.0.0"
+priority: "high"
+status: "completed"
+scope: "Manifest V3 extension with automatic image discovery, WebGPU/WebAssembly inference, a one-time integrity-checked model download, a 65 percent confidence threshold, and reproducible MIT-licensed source."
+non_goals:
+  - "Cloud inference or telemetry"
+  - "Local native server"
+  - "Definitive authorship claims"
+acceptance_criteria:
+  - "Every analyzed image receives a visible AI confidence score"
+  - "No image data or inference result is transmitted to an external service"
+  - "Inference works after network access is disabled once the model is cached"
+  - "Build output is a native Manifest V3 extension"
+  - "The model source revision, conversion procedure, checksum, and license are documented"
+  - "The project is MIT licensed and reproducible with npm ci and npm run check"
+risks:
+  - risk: "Private-benchmark accuracy cannot be established without access to the held-out images"
+    severity: "high"
+  - risk: "Generator distribution shift can reduce accuracy"
+    severity: "high"
+  - risk: "A first-run model download is approximately 328 MB"
+    severity: "medium"
+review_expectations:
+  - "Review MV3 CSP and host-permission use"
+  - "Reproduce and compare the ONNX checksum"
+  - "Test setup online, then inference offline in a clean Chrome profile"
+tags:
+  - "chrome-extension"
+  - "webgpu"
+  - "onnx"
+  - "privacy"
