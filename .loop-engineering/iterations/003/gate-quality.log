@@ -5,15 +5,15 @@
 
  RUN  v3.2.7 /Users/robertdevore/2026/Kujolang/kujo-repos/truthlens
 
- ✓ tests/preprocess.test.ts (2 tests) 7ms
- ✓ tests/runtime.test.ts (2 tests) 4ms
- ✓ tests/image-priority.test.ts (2 tests) 4ms
- ✓ tests/calibration.test.ts (3 tests) 6ms
+ ✓ tests/image-priority.test.ts (2 tests) 10ms
+ ✓ tests/preprocess.test.ts (2 tests) 10ms
+ ✓ tests/runtime.test.ts (2 tests) 11ms
+ ✓ tests/calibration.test.ts (3 tests) 10ms
 
  Test Files  4 passed (4)
       Tests  9 passed (9)
-   Start at  12:23:08
-   Duration  1.25s (transform 229ms, setup 0ms, collect 318ms, tests 22ms, environment 2ms, prepare 1.56s)
+   Start at  12:27:54
+   Duration  3.41s (transform 556ms, setup 0ms, collect 1.15s, tests 41ms, environment 1ms, prepare 2.13s)
 
 
 > truthlens@1.4.0 build

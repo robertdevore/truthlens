@@ -1,6 +1,22 @@
 # Context
 
 - objective: Prioritize visible Google Images thumbnails, bound preprocessing and inference work, improve safe local runtime utilization, and preserve identical model, preprocessing, calibration, privacy, and verdict quality.
-- git_head: fc058c2
+- git_head: 888ed2b
 - changed_files:
-  - none
+  - .loop-engineering/iterations/001/context.md
+  - .loop-engineering/iterations/001/diff.patch
+  - .loop-engineering/iterations/001/eval.log
+  - .loop-engineering/iterations/001/gate-diff_check.log
+  - .loop-engineering/iterations/001/gate-kujo_eval.log
+  - .loop-engineering/iterations/001/gate-quality.log
+  - .loop-engineering/iterations/002/context.md
+  - .loop-engineering/iterations/002/diff.patch
+  - .loop-engineering/iterations/002/eval.log
+  - .loop-engineering/iterations/002/gate-diff_check.log
+  - .loop-engineering/iterations/002/gate-kujo_eval.log
+  - .loop-engineering/iterations/002/gate-quality.log
+  - .loop-engineering/iterations/003/context.md
+  - .loop-engineering/iterations/003/diff.patch
+  - .loop-engineering/iterations/003/eval.log
+  - .loop-engineering/iterations/003/gate-quality.log
+  - .loop-engineering/ledger.tsv
