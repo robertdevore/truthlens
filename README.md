@@ -10,6 +10,15 @@ The model is a CLIP ViT-B/16 forensic classifier fine-tuned on approximately 20,
 
 TruthLens maps the model's published, temperature-calibrated fake/real boundaries onto the challenge's required 65% confidence convention. The mapping is monotonic and covered by unit tests.
 
+## Performance
+
+- The model session is prepared once, warmed up during setup, and restored proactively at Chrome startup.
+- Image decoding happens while the model loads, while GPU inference is serialized to avoid WebGPU contention and memory spikes on image-heavy pages.
+- Duplicate requests are coalesced. Successful results use a bounded 10-minute in-memory LRU cache, so repeated image URLs are labeled without another model run.
+- Tensor and GPU output resources are released immediately after each inference.
+
+On the included smoke samples, a warm WebGPU inference completes in roughly one second on an Apple Silicon development machine; a repeated cached image returns from the extension in effectively zero inference time. Hardware and Chrome GPU support determine actual latency.
+
 ## Privacy and offline behavior
 
 - Webpage images are fetched only by the extension and decoded in memory.
@@ -82,7 +91,7 @@ npm run check            # complete deterministic quality gate
 npm run package          # reproducible extension archive
 ```
 
-A Kujo Spec contract is stored in `specs/truthlens.spec.yml`; deterministic release checks are stored in `eval.json`.
+A Kujo Spec contract is stored in `specs/truthlens.spec.yml`; deterministic release checks are stored in `eval.json`. The publisher's 95.9% held-out result establishes the model-selection target, but only the bounty maintainer can measure performance on its private benchmark.
 
 ## Limitations
 
@@ -91,4 +100,3 @@ AI-image detection is probabilistic, generator-dependent, and vulnerable to dist
 ## License and attribution
 
 Extension source is MIT licensed. ONNX Runtime Web is MIT licensed. The detector weights are MIT licensed by their publisher; the backbone is based on OpenAI CLIP. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for precise provenance.
-
