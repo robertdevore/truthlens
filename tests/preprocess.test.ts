@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CHANNEL_MEAN, CHANNEL_STD, rgbaToChw } from '../src/preprocess';
+import { CHANNEL_MEAN, CHANNEL_STD, centerCropSource, rgbaToChw } from '../src/preprocess';
 
 describe('image preprocessing', () => {
   it('converts RGBA pixels to normalized planar RGB', () => {
@@ -11,5 +11,7 @@ describe('image preprocessing', () => {
   it('rejects malformed input', () => {
     expect(() => rgbaToChw(new Uint8ClampedArray(3), 1, 1)).toThrow(/Expected 4/);
   });
+  it('matches resize-short-side then center-crop geometry', () => {
+    expect(centerCropSource(1600, 900)).toEqual({ x: 400, y: 50, size: 800 });
+  });
 });
-

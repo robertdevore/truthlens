@@ -1,6 +1,12 @@
 export const INPUT_SIZE = 256;
-export const CHANNEL_MEAN = [0.481, 0.458, 0.408] as const;
-export const CHANNEL_STD = [0.269, 0.261, 0.276] as const;
+export const RESIZE_SHORT_SIDE = 288;
+export const CHANNEL_MEAN = [0.485, 0.456, 0.406] as const;
+export const CHANNEL_STD = [0.229, 0.224, 0.225] as const;
+
+export function centerCropSource(width: number, height: number): { x: number; y: number; size: number } {
+  const size = Math.min(width, height) * INPUT_SIZE / RESIZE_SHORT_SIDE;
+  return { x: (width - size) / 2, y: (height - size) / 2, size };
+}
 
 export function rgbaToChw(data: Uint8ClampedArray, width = INPUT_SIZE, height = INPUT_SIZE): Float32Array {
   const pixels = width * height;
@@ -15,4 +21,3 @@ export function rgbaToChw(data: Uint8ClampedArray, width = INPUT_SIZE, height = 
   }
   return output;
 }
-

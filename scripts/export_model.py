@@ -1,18 +1,25 @@
 from pathlib import Path
-import json
-import torch
+
+import onnx
 import timm
-from safetensors.torch import load_file
+import torch
 
 root = Path(__file__).resolve().parents[1]
-work = root / '.model-build'
-config = json.loads((work / 'config.json').read_text())
-model = timm.create_model(config['backbone'], pretrained=False, num_classes=1, img_size=config['image_size'])
-missing, unexpected = model.load_state_dict(load_file(str(work / 'model.safetensors')), strict=False)
-if missing or unexpected:
-    raise RuntimeError(f'Weight mismatch: missing={missing}, unexpected={unexpected}')
+work = root / ".model-build"
+checkpoint = torch.load(work / "checkpoint_phase1.pth", map_location="cpu", weights_only=False)
+model = timm.create_model("convnextv2_base", pretrained=False, num_classes=2)
+model.load_state_dict(checkpoint["model"])
 model.eval()
-sample = torch.zeros(1, 3, config['image_size'], config['image_size'])
-with torch.no_grad():
-    torch.onnx.export(model, sample, work / 'detector.onnx', input_names=['pixel_values'], output_names=['logits'], opset_version=18)
-print(work / 'detector.onnx')
+
+output = work / "detector.onnx"
+torch.onnx.export(
+    model,
+    torch.zeros(1, 3, 256, 256),
+    output,
+    input_names=["pixel_values"],
+    output_names=["logits"],
+    dynamic_axes={"pixel_values": {0: "batch_size"}, "logits": {0: "batch_size"}},
+    opset_version=17,
+)
+onnx.checker.check_model(output)
+print(output)

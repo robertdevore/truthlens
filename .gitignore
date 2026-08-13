@@ -3,6 +3,8 @@ dist/
 .eval-results/
 .lens/runs/
 .model-build/
+.model-candidates/
+.benchmark-cache/
 artifacts/
 *.zip
 .DS_Store

@@ -1,6 +1,6 @@
 import * as ort from 'onnxruntime-web/webgpu';
-import { calibrateAiConfidence, verdictFor } from './calibration';
-import { INPUT_SIZE, rgbaToChw } from './preprocess';
+import { artificialProbability, calibrateAiConfidence, verdictFor } from './calibration';
+import { centerCropSource, INPUT_SIZE, rgbaToChw } from './preprocess';
 import { MODEL_BYTES, MODEL_CACHE, MODEL_CACHE_KEY, MODEL_SHA256, MODEL_URL } from './model-config';
 import { errorMessage, LruCache } from './runtime';
 import type { AnalysisResult, ModelProgress, ModelStage } from './types';
@@ -8,10 +8,17 @@ import type { AnalysisResult, ModelProgress, ModelStage } from './types';
 let sessionPromise: Promise<ort.InferenceSession> | undefined;
 let backend = 'initializing';
 let inferenceQueue = Promise.resolve();
+const MAX_INFERENCE_BATCH = 4;
+const BATCH_WINDOW_MS = 6;
+interface BatchJob {
+  input: Float32Array;
+  resolve: (probability: number) => void;
+  reject: (error: unknown) => void;
+}
+const batchQueue: BatchJob[] = [];
+let batchTimer: ReturnType<typeof setTimeout> | undefined;
 const resultCache = new LruCache<string, Omit<AnalysisResult, 'requestId'>>(256, 10 * 60 * 1000);
 const inFlight = new Map<string, Promise<Omit<AnalysisResult, 'requestId'>>>();
-const canvas = new OffscreenCanvas(INPUT_SIZE, INPUT_SIZE);
-const canvasContext = canvas.getContext('2d', { willReadFrequently: true });
 let modelProgressPercent = 0;
 
 function reportProgress(stage: ModelStage, percent: number, detail: string, bytes?: { loaded: number; total: number }): void {
@@ -113,15 +120,20 @@ async function getSession(): Promise<ort.InferenceSession> {
   return sessionPromise;
 }
 
-async function imageTensor(url: string): Promise<ort.Tensor> {
+async function imageInput(url: string): Promise<Float32Array> {
   const response = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer' });
   if (!response.ok) throw new Error(`Image fetch failed (${response.status})`);
   const bitmap = await createImageBitmap(await response.blob());
   try {
+    const canvas = new OffscreenCanvas(INPUT_SIZE, INPUT_SIZE);
+    const canvasContext = canvas.getContext('2d', { willReadFrequently: true });
     if (!canvasContext) throw new Error('Canvas unavailable');
-    canvasContext.drawImage(bitmap, 0, 0, INPUT_SIZE, INPUT_SIZE);
+    canvasContext.imageSmoothingEnabled = true;
+    canvasContext.imageSmoothingQuality = 'high';
+    const crop = centerCropSource(bitmap.width, bitmap.height);
+    canvasContext.drawImage(bitmap, crop.x, crop.y, crop.size, crop.size, 0, 0, INPUT_SIZE, INPUT_SIZE);
     const rgba = canvasContext.getImageData(0, 0, INPUT_SIZE, INPUT_SIZE).data;
-    return new ort.Tensor('float32', rgbaToChw(rgba), [1, 3, INPUT_SIZE, INPUT_SIZE]);
+    return rgbaToChw(rgba);
   } finally {
     bitmap.close();
   }
@@ -133,24 +145,61 @@ function enqueueInference<T>(job: () => Promise<T>): Promise<T> {
   return result;
 }
 
-async function infer(url: string): Promise<Omit<AnalysisResult, 'requestId'>> {
-  const started = performance.now();
+function softmaxArtificial(logits: ArrayLike<unknown>, offset: number): number {
+  const real = Number(logits[offset]);
+  const artificial = Number(logits[offset + 1]);
+  return artificialProbability(real, artificial);
+}
+
+async function flushBatch(): Promise<void> {
+  batchTimer = undefined;
+  const jobs = batchQueue.splice(0, MAX_INFERENCE_BATCH);
+  if (jobs.length === 0) return;
   let tensor: ort.Tensor | undefined;
   try {
-    const [session, preparedTensor] = await Promise.all([getSession(), imageTensor(url)]);
-    tensor = preparedTensor;
+    const session = await getSession();
     const inputName = session.inputNames[0];
     if (!inputName) throw new Error('Model has no input');
-    const outputs = await enqueueInference(() => session.run({ [inputName]: preparedTensor }));
-    let raw = Number.NaN;
+    const valuesPerImage = 3 * INPUT_SIZE * INPUT_SIZE;
+    const input = new Float32Array(jobs.length * valuesPerImage);
+    jobs.forEach((job, index) => input.set(job.input, index * valuesPerImage));
+    tensor = new ort.Tensor('float32', input, [jobs.length, 3, INPUT_SIZE, INPUT_SIZE]);
+    const outputs = await enqueueInference(() => session.run({ [inputName]: tensor! }));
     try {
       const outputName = session.outputNames[0];
-      raw = outputName ? Number(outputs[outputName]?.data[0]) : Number.NaN;
+      const logits = outputName ? outputs[outputName]?.data : undefined;
+      if (!logits || logits.length < jobs.length * 2) throw new Error('Model returned invalid batch scores');
+      jobs.forEach((job, index) => job.resolve(softmaxArtificial(logits, index * 2)));
     } finally {
       Object.values(outputs).forEach((output) => output.dispose());
     }
-    if (!Number.isFinite(raw)) throw new Error('Model returned an invalid score');
-    const scores = calibrateAiConfidence(raw);
+  } catch (error) {
+    jobs.forEach((job) => job.reject(error));
+  } finally {
+    tensor?.dispose();
+    if (batchQueue.length > 0) void flushBatch();
+  }
+}
+
+function enqueueModel(input: Float32Array): Promise<number> {
+  return new Promise((resolve, reject) => {
+    batchQueue.push({ input, resolve, reject });
+    if (batchQueue.length >= MAX_INFERENCE_BATCH) {
+      if (batchTimer !== undefined) clearTimeout(batchTimer);
+      batchTimer = undefined;
+      void flushBatch();
+    } else if (batchTimer === undefined) {
+      batchTimer = setTimeout(() => void flushBatch(), BATCH_WINDOW_MS);
+    }
+  });
+}
+
+async function infer(url: string): Promise<Omit<AnalysisResult, 'requestId'>> {
+  const started = performance.now();
+  try {
+    const modelAiProbability = await enqueueModel(await imageInput(url));
+    if (!Number.isFinite(modelAiProbability)) throw new Error('Model returned an invalid score');
+    const scores = calibrateAiConfidence(modelAiProbability);
     return {
       verdict: verdictFor(scores.aiConfidence),
       aiConfidence: scores.aiConfidence,
@@ -167,8 +216,6 @@ async function infer(url: string): Promise<Omit<AnalysisResult, 'requestId'>> {
       backend,
       error: errorMessage(error)
     };
-  } finally {
-    tensor?.dispose();
   }
 }
 
