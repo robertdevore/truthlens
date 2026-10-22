@@ -46,7 +46,7 @@ To prove offline operation, finish step 5, disable networking, restart Chrome, a
 
 ## Reproducible source build
 
-Prerequisites: Node.js 20+, npm 10+, Chrome 121+, and standard Unix tools. Runtime users do not need Python. Model maintainers need Python 3.10 only when reproducing the ONNX conversion.
+Prerequisites: Node.js 26.12.1 (or a patched supported version matching package.json engines), npm 11+, Chrome 121+, and standard Unix tools. Runtime users do not need Python. Model maintainers need Python 3.10 only when reproducing the ONNX conversion.
 
 ```bash
 git clone https://github.com/robertdevore/truthlens.git
